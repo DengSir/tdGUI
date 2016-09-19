@@ -7,7 +7,7 @@ GridView.lua
 
 local MAJOR, MINOR = 'GridView', 1
 local GUI = LibStub('tdGUI-1.0')
-local GridView = GUI:NewClass(MAJOR, MINOR, 'Frame', 'Refresh', 'View', 'Scroll', 'Select', 'Owner')
+local GridView = GUI:NewClass(MAJOR, MINOR, 'Frame', 'Refresh', 'View', 'Select', 'Owner')
 if not GridView then return end
 
 function GridView:Constructor()
@@ -15,12 +15,57 @@ function GridView:Constructor()
     self:SetSelectMode('NONE')
     self:SetScript('OnShow', self.Refresh)
     self:SetScript('OnSizeChanged', self.OnSizeChanged)
+
+    local scrollBar = CreateFrame('Slider', nil, self, 'UIPanelScrollBarTemplate') do
+        self.scrollBar  = scrollBar
+        self.scrollUp   = scrollBar.ScrollUpButton
+        self.scrollDown = scrollBar.ScrollDownButton
+
+        scrollBar.thumbTexture = scrollBar.ThumbTexture
+        scrollBar:SetValueStep(1)
+        scrollBar:SetStepsPerPage(1)
+        scrollBar:SetPoint('TOPRIGHT', 0, -18)
+        scrollBar:SetPoint('BOTTOMRIGHT', 0, 18)
+        scrollBar:SetScript('OnValueChanged', function(scrollBar, value)
+            HybridScrollFrame_UpdateButtonStates(self, value)
+            self:SetOffset(value)
+        end)
+        scrollBar:SetScript('OnMinMaxChanged', function(scrollBar, minValue, maxValue)
+            scrollBar:SetShown(minValue ~= maxValue)
+        end)
+        scrollBar:SetScript('OnShow', function(scrollBar)
+            self:Refresh()
+        end)
+        scrollBar:SetScript('OnHide', function(scrollBar)
+            self:Refresh()
+        end)
+    end
+
+    self:EnableMouseWheel(true)
+    self:SetScript('OnMouseWheel', self.OnMouseWheel)
+end
+
+function GridView:SetOffset(value)
+    local offset = math.floor(value + 0.5)
+    if self._offset ~= offset then
+        print(offset)
+        self._offset = offset
+        self:Refresh()
+    end
+end
+
+function GridView:GetOffset()
+    return self._offset or 1
+end
+
+function GridView:OnMouseWheel(delta)
+    self.scrollBar:SetValue(self.scrollBar:GetValue() - self.scrollBar:GetValueStep() * delta)
 end
 
 function GridView:OnSizeChanged()
     self._rowCount = nil
-    self:Refresh()
     self:UpdateLayout()
+    self:Refresh()
 end
 
 function GridView:Update()
@@ -32,6 +77,15 @@ function GridView:GetMaxCount()
     return self:GetRowCount() * self:GetColumnCount()
 end
 
+function GridView:UpdateScrollBar()
+    local maxCount  = self:GetMaxCount()
+    local itemCount = self:GetItemCount()
+    local maxValue  = itemCount <= maxCount and 1 or itemCount - maxCount + 1
+
+    self.scrollBar:SetMinMaxValues(1, maxValue)
+    self.scrollBar:SetValue(self:GetOffset())
+end
+
 function GridView:UpdateLayout()
     for i in ipairs(self._buttons) do
         self:UpdateItemPosition(i)
@@ -40,7 +94,7 @@ end
 
 function GridView:UpdateItemPosition(i)
     local button                     = self:GetButton(i)
-    local itemSpacing1, itemSpacing2 = self:GetItemSpacing()
+    local itemSpacingV, itemSpacingH = self:GetItemSpacing()
     local itemHeight                 = self:GetItemHeight()
     local itemWidth                  = self:GetItemWidth()
     local lineCount                  = self:GetColumnCount()
@@ -52,14 +106,14 @@ function GridView:UpdateItemPosition(i)
 
     if lineCount == 1 and self:GetRowCount() ~= 1 then
         button:SetHeight(itemHeight)
-        button:SetPoint('TOPLEFT', left, -top-(i-1)*(itemHeight+itemSpacing1))
-        button:SetPoint('TOPRIGHT', -right, -top-(i-1)*(itemHeight+itemSpacing1))
+        button:SetPoint('TOPLEFT', left, -top-(i-1)*(itemHeight+itemSpacingV))
+        button:SetPoint('TOPRIGHT', -right, -top-(i-1)*(itemHeight+itemSpacingV))
     else
         local row = floor((i-1)/lineCount)
         local col = (i-1)%lineCount
 
         button:SetSize(itemWidth, itemHeight)
-        button:SetPoint('TOPLEFT', left+col*(itemWidth+itemSpacing2), -top-row*(itemHeight+itemSpacing1))
+        button:SetPoint('TOPLEFT', left+col*(itemWidth+itemSpacingH), -top-row*(itemHeight+itemSpacingV))
     end
 end
 
@@ -93,7 +147,7 @@ function GridView:UpdateItems()
         self:GetButton(i):Hide()
     end
 
-    if maxCount > 0 and self:GetAutoSize() then
+    if maxCount > 0 and self:IsAutoSize() then
         local left, right, top, bottom = self:GetPadding()
         local height                   = self:GetTop() - self:GetButton(maxCount):GetBottom() + bottom
         local width                    = self:GetScrollBarFixedWidth()
@@ -123,7 +177,7 @@ end
 
 function GridView:GetRowCount()
     if not self._rowCount then
-        if self.autoSize then
+        if self._autoSize then
             return self:GetItemCount()
         else
             local itemHeight  = self:GetItemHeight()
@@ -137,35 +191,49 @@ function GridView:GetRowCount()
     return self._rowCount
 end
 
-function GridView:SetAutoSize(autoSize)
-    self.autoSize = autoSize
+function GridView:SetAutoSize(_autoSize)
+    self._autoSize = _autoSize
     self:SetScript('OnSizeChanged', not autosize and self.OnSizeChanged or nil)
     self:SetSize(1, 1)
 end
 
-function GridView:GetAutoSize()
-    return self.autoSize
+function GridView:IsAutoSize()
+    return self._autoSize
 end
 
 function GridView:GetItemWidth()
-    if not self:GetAutoSize() then
+    if not self._autoSize then
         local left, right     = self:GetPadding()
-        local _, itemSpacing2 = self:GetItemSpacing()
+        local _, itemSpacingH = self:GetItemSpacing()
         local columnCount     = self:GetColumnCount()
-        local width           = self:GetWidth() - left - right - (columnCount-1) * itemSpacing2 - self:GetScrollBarFixedWidth()
+        local width           = self:GetWidth() - left - right - (columnCount-1) * itemSpacingH - self:GetScrollBarFixedWidth()
 
-        self.itemWidth = width / columnCount
+        self._itemWidth = width / columnCount
 
-        return self.itemWidth
+        return self._itemWidth
     end
-    return self.itemWidth or 20
+    return self._itemWidth or 20
 end
 
-function GridView:SetItemSpacing(spacing1, spacing2)
-    self.itemSpacing = spacing1
-    self.itemSpacing2 = spacing2 or spacing1
+function GridView:SetItemSpacing(itemSpacingV, itemSpacingH)
+    self.itemSpacingV, self.itemSpacingH = itemSpacingV, itemSpacingH
 end
 
 function GridView:GetItemSpacing()
-    return self.itemSpacing or 0, self.itemSpacing2 or 0
+    return  self.itemSpacingV or 0,
+            self.itemSpacingH or self.itemSpacingV or 0
+end
+
+function GridView:GetScrollBarFixedWidth()
+    return self.scrollBar:IsShown() and self.scrollBar:GetWidth() or 0
+end
+
+function GridView:SetScrollStep(scrollStep)
+    self.scrollBar.scrollStep = scrollStep
+    self.scrollBar:SetValueStep(scrollStep)
+    -- self.scrollBar:SetStepsPerPage(scrollStep)
+end
+
+function GridView:GetScrollStep()
+    return self.scrollBar.scrollStep
 end

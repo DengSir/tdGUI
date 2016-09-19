@@ -12,7 +12,6 @@ if not ListView then return end
 function ListView:Constructor(parent)
     self._buttons = {}
     self.update = self.Refresh
-    -- self:SetScrollChild(CreateFrame('Frame', nil, self))
     self:SetScript('OnSizeChanged', self.OnSizeChanged)
 
     self.scrollBar:ClearAllPoints()
@@ -27,8 +26,6 @@ function ListView:OnSizeChanged()
     self._maxCount = nil
     self._needUpdateScroll = true
     self.scrollChild:SetWidth(self:GetWidth() - 18)
-
-    print(self:GetWidth(), self.scrollChild:GetWidth())
 
     self:Refresh()
 end
@@ -70,7 +67,7 @@ function ListView:UpdateScroll()
 end
 
 function ListView:UpdateItems()
-    local offset      = HybridScrollFrame_GetOffset(self)
+    local offset      = self:GetOffset()
     local itemCount   = self:GetItemCount()
     local maxCount    = self:GetMaxCount()
     local itemHeight  = self:GetItemHeight()
@@ -136,7 +133,4 @@ function ListView:SetItemSpacing(itemSpacing)
     self._needUpdateScroll = true
 end
 
--- ListView.GetOffset = HybridScrollFrame_GetOffset
--- ListView.SetOffset = HybridScrollFrame_SetOffset
--- ListView.ExpandButton = HybridScrollFrame_ExpandButton
--- ListView.CollapseButton = HybridScrollFrame_CollapseButton
+ListView.GetOffset = HybridScrollFrame_GetOffset

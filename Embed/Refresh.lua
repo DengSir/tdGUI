@@ -11,8 +11,8 @@ local View, oldminor = GUI:NewEmbed(MAJOR, MINOR)
 if not View then return end
 
 local function Refresh(self)
-    self:SetScript('OnUpdate', nil)
     self:Update()
+    self:SetScript('OnUpdate', nil)
 
     if type(self.Fire) == 'function' then
         self:Fire('OnRefresh')
