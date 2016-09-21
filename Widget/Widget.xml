@@ -4,4 +4,5 @@
   <Script file="EditBox.lua" />
   <Script file="InputBox.lua" />
   <Script file="EditBoxGroup.lua" />
+  <Script file="BlockConfirm.lua" />
 </Ui>
