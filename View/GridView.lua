@@ -48,7 +48,6 @@ end
 function GridView:SetOffset(value)
     local offset = math.floor(value + 0.5)
     if self._offset ~= offset then
-        print(offset)
         self._offset = offset
         self:Refresh()
     end

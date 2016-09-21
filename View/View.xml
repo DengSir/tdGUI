@@ -1,7 +1,6 @@
 <Ui xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-  <Script file="ScrollBar.lua" />
-  <Script file="ViewItem.lua" />
   <Script file="ListView.lua" />
   <Script file="GridView.lua" />
+  <Script file="TreeView.lua" />
 </Ui>

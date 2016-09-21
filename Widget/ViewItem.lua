@@ -9,6 +9,8 @@ local MAJOR, MINOR = 'ViewItem', 1
 local ViewItem, oldminor = LibStub('tdGUI-1.0'):NewClass(MAJOR, MINOR, 'Button', 'Owner')
 if not ViewItem then return end
 
+local Class = LibStub('LibClass-2.0')
+
 function ViewItem:Constructor(parent)
     self:SetMotionScriptsWhileDisabled(true)
     self:SetFrameLevel(parent:GetFrameLevel() + 1)
@@ -58,7 +60,7 @@ end
 
 function ViewItem:OnLeave()
     self._isEntered = nil
-    self:FireHandler('OnItemLevel')
+    self:FireHandler('OnItemLeave')
 end
 
 function ViewItem:FireFormat()
@@ -75,4 +77,24 @@ end
 
 function ViewItem:GetChecked()
     return self._checked
+end
+
+function ViewItem:BindScript(object, script, handler)
+    if not Class:IsWidget(object) then
+        error([[bad argument #1 to 'BindScript' (widget expected)]], 2)
+    end
+
+    object:SetScript(script, function()
+        self:FireHandler(handler)
+    end)
+end
+
+function ViewItem:BindCallback(object, callback, handler)
+    if not Class:IsObject(object) then
+        error([[bad argument #1 to 'BindCallback' (widget expected)]], 2)
+    end
+
+    object:SetCallback(callback, function()
+        self:FireHandler(handler)
+    end)
 end
