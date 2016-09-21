@@ -5,9 +5,9 @@ BlockConfirm.lua
 @Link    : https://dengsir.github.io
 ]]
 
-local ns           = select(2, ...)
-local Addon        = ns.Addon
-local BlockConfirm = Addon:NewClass('BlockConfirm', 'Frame')
+local MAJOR, MINOR = 'BlockConfirm', 1
+local BlockConfirm, oldminor = LibStub('tdGUI-1.0'):NewClass(MAJOR, MINOR, 'Frame')
+if not BlockConfirm then return end
 
 LibStub('AceTimer-3.0'):Embed(BlockConfirm)
 
