@@ -13,6 +13,7 @@ if not BasicPanel then return end
 function BasicPanel:Constructor()
     self:SetClampedToScreen(true)
     self:EnableMouse(true)
+    self:SetToplevel(true)
 
     local Drag = CreateFrame('Frame', nil, self) do
         Drag:Hide()
