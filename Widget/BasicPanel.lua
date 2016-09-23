@@ -15,6 +15,9 @@ function BasicPanel:Constructor()
     self:EnableMouse(true)
     self:SetToplevel(true)
 
+    self:SetScript('OnShow', self.OnShow)
+    self:SetScript('OnHide', self.OnHide)
+
     local Drag = CreateFrame('Frame', nil, self) do
         Drag:Hide()
         Drag:SetPoint('TOPLEFT', 20, 0)
@@ -66,4 +69,14 @@ end
 
 function BasicPanel:GetText()
     return self.TitleText:GetText()
+end
+
+function BasicPanel:OnShow()
+    PlaySound('igCharacterInfoTab')
+    self:Fire('OnShow')
+end
+
+function BasicPanel:OnHide()
+    PlaySound('igMainMenuClose')
+    self:Fire('OnHide')
 end
