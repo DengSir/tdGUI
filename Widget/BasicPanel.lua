@@ -49,6 +49,7 @@ function BasicPanel:Constructor()
     end
 
     local Portrait = CreateFrame('Frame', nil, self) do
+        Portrait:Hide()
         Portrait:SetSize(61, 61)
         Portrait:SetPoint('TOPLEFT', -6, 8)
         Portrait:SetFrameLevel(self:GetFrameLevel() + 100)
