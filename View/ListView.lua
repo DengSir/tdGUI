@@ -18,6 +18,8 @@ function ListView:Constructor(parent)
     self.scrollBar:SetPoint('TOPRIGHT', 0, -18)
     self.scrollBar:SetPoint('BOTTOMRIGHT', 0, 18)
 
+    self.scrollBar.doNotHide = true
+
     self:SetSelectMode('NONE')
     self:ClearAllPoints()
 end
@@ -72,6 +74,7 @@ function ListView:UpdateItems()
     local maxCount    = self:GetMaxCount()
     local itemHeight  = self:GetItemHeight()
     local itemSpacing = self:GetItemSpacing()
+    local top, bottom = select(3, self:GetPadding())
     local realCount   = min(itemCount, maxCount)
 
     for i = 1, realCount do
@@ -88,18 +91,19 @@ function ListView:UpdateItems()
     for i = realCount + 1, #self._buttons do
         self:GetButton(i):Hide()
     end
-    HybridScrollFrame_Update(self, self:GetItemCount() * self:GetButtonHeight(), self:GetHeight());
+    HybridScrollFrame_Update(self, self:GetItemCount() * self:GetButtonHeight() + top + bottom , self:GetHeight());
 end
 
 function ListView:UpdateItemPosition(i)
-    local itemSpacing = self:GetItemSpacing()
-    local button = self:GetButton(i)
+    local itemSpacing      = self:GetItemSpacing()
+    local left, right, top = self:GetPadding()
+    local button           = self:GetButton(i)
 
     button:ClearAllPoints()
 
     if i == 1 then
-        button:SetPoint('TOPLEFT')
-        button:SetPoint('TOPRIGHT', -18, 0)
+        button:SetPoint('TOPLEFT', left, -top)
+        button:SetPoint('TOPRIGHT', -18-right, -top)
     else
         button:SetPoint('TOPLEFT', self:GetButton(i-1), 'BOTTOMLEFT', 0, -itemSpacing)
         button:SetPoint('TOPRIGHT', self:GetButton(i-1), 'BOTTOMRIGHT', 0, -itemSpacing)

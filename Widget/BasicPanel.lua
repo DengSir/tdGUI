@@ -14,7 +14,6 @@ function BasicPanel:Constructor()
     self:SetClampedToScreen(true)
     self:EnableMouse(true)
     self:SetToplevel(true)
-
     self:SetScript('OnShow', self.OnShow)
     self:SetScript('OnHide', self.OnHide)
 
@@ -49,8 +48,28 @@ function BasicPanel:Constructor()
         end)
     end
 
-    self.Drag   = Drag
-    self.Resize = Resize
+    local Portrait = CreateFrame('Frame', nil, self) do
+        Portrait:SetSize(61, 61)
+        Portrait:SetPoint('TOPLEFT', -6, 8)
+        Portrait:SetFrameLevel(self:GetFrameLevel() + 100)
+
+        local Border = Portrait:CreateTexture(nil, 'OVERLAY', 'UI-Frame-Portrait') do
+            Border:ClearAllPoints()
+            Border:SetPoint('TOPLEFT', self, 'TOPLEFT', -14, 11)
+            Border:SetSize(78, 78)
+        end
+
+        local Icon = Portrait:CreateTexture(nil, 'OVERLAY', nil, -1) do
+            Icon:SetMask([[Textures\MinimapMask]])
+            Icon:SetAllPoints(Portrait)
+        end
+        Portrait.Icon   = Icon
+        Portrait.Border = Border
+    end
+
+    self.Drag     = Drag
+    self.Resize   = Resize
+    self.Portrait = Portrait
 end
 
 function BasicPanel:SetMovable(flag)
@@ -79,4 +98,24 @@ end
 function BasicPanel:OnHide()
     PlaySound('igMainMenuClose')
     self:Fire('OnHide')
+end
+
+function BasicPanel:ShowPortrait()
+    self.Portrait:Show()
+    self.TopLeftCorner:Hide()
+	self.TopBorder:SetPoint('TOPLEFT', self.Portrait.Border, 'TOPRIGHT',  0, -10)
+	self.LeftBorder:SetPoint('TOPLEFT', self.Portrait.Border, 'BOTTOMLEFT',  8, 0)
+    self.Drag:SetPoint('TOPLEFT', 80, 0)
+end
+
+function BasicPanel:HidePortrait()
+    self.Portrait:Hide()
+    self.TopLeftCorner:Show()
+	self.TopBorder:SetPoint('TOPLEFT', self.TopLeftCorner, 'TOPRIGHT',  0, 0)
+	self.LeftBorder:SetPoint('TOPLEFT', self.TopLeftCorner, 'BOTTOMLEFT',  0, 0)
+    self.Drag:SetPoint('TOPLEFT', 20, 0)
+end
+
+function BasicPanel:SetPortrait(texture)
+    self.Portrait.Icon:SetTexture(texture)
 end

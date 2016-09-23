@@ -65,11 +65,16 @@ function View:GetItemClass()
 end
 
 function View:GetItem(index)
-    return (self._filterList or self._itemList)[index]
+    -- return (self._filterList or self._itemList)[index]
+    if self._filterList then
+        return self._filterList[index]
+    elseif self._itemList then
+        return self._itemList[index]
+    end
 end
 
 function View:GetItemCount()
-    return #(self._filterList or self._itemList)
+    return self._filterList and #self._filterList or self._itemList and #self._itemList or 0
 end
 
 function View:GetButton(index)
