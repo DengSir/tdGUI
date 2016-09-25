@@ -10,6 +10,10 @@ local GUI = LibStub('tdGUI-1.0')
 local BasicPanel, oldminor = GUI:NewClass(MAJOR, MINOR, 'Frame.BasicFrameTemplate')
 if not BasicPanel then return end
 
+LibStub('LibWindow-1.1'):Embed(BasicPanel)
+
+BasicPanel.MakeDraggable = nil
+
 function BasicPanel:Constructor()
     self:SetClampedToScreen(true)
     self:EnableMouse(true)
@@ -29,6 +33,7 @@ function BasicPanel:Constructor()
         end)
         Drag:SetScript('OnDragStop', function()
             self:StopMovingOrSizing()
+            self:SavePosition()
         end)
     end
 
@@ -45,6 +50,7 @@ function BasicPanel:Constructor()
         end)
         Resize:SetScript('OnMouseUp', function()
             self:StopMovingOrSizing()
+            self:SaveSize()
         end)
     end
 
@@ -119,4 +125,18 @@ end
 
 function BasicPanel:SetPortrait(texture)
     self.Portrait.Icon:SetTexture(texture)
+end
+
+local orig_RegisterConfig = BasicPanel.RegisterConfig
+function BasicPanel:RegisterConfig(storage)
+    orig_RegisterConfig(self, storage)
+    self._storage = storage
+end
+
+function BasicPanel:RestoreSize()
+    self:SetSize(self._storage.width, self._storage.height)
+end
+
+function BasicPanel:SaveSize()
+    self._storage.width, self._storage.height = self:GetSize()
 end
