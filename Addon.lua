@@ -21,7 +21,6 @@ end
 
 function GUI:Embed(target, ...)
     for i = 1, select('#', ...) do
-        print((select(i,...)))
         local embed = GUI:GetEmbed(select(i, ...))
         if embed then
             embed:Embed(target)

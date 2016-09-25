@@ -35,7 +35,9 @@ function ViewItem:OnClick(click)
 
     if click == 'LeftButton' then
         if not IsModifierKeyDown() then
-            if self:GetID() ~= 0 then
+            if self:GetID() == 0 then
+                
+            elseif not self._nonSelectable then
                 self:GetOwner():SetSelected(self:GetID())
             end
         end
@@ -77,6 +79,10 @@ end
 
 function ViewItem:GetChecked()
     return self._checked
+end
+
+function ViewItem:SetSelectable(flag)
+    self._nonSelectable = not flag or nil
 end
 
 function ViewItem:BindScript(object, script, handler)
