@@ -10,8 +10,6 @@ local GUI = LibStub('tdGUI-1.0')
 local BlockDialog, oldminor = GUI:NewClass(MAJOR, MINOR, 'Frame')
 if not BlockDialog then return end
 
-LibStub('AceTimer-3.0'):Embed(BlockDialog)
-
 function BlockDialog:Constructor(parent)
     self:Hide()
     self:EnableMouse(true)
@@ -136,13 +134,16 @@ function BlockDialog:Open(opts)
 
     if opts.delay and opts.delay > 0 then
         self.acceptText = opts.acceptText or ACCEPT
-        self.delay      = opts.delay
+        self.delay      = math.ceil(opts.delay)
+        self.delayTimer = C_Timer.NewTicker(1, function() self:OnTimer() end, self.delay)
         self:OnTimer()
-        self:ScheduleRepeatingTimer('OnTimer', 1)
     else
+        if self.delayTimer then
+            self.delayTimer:Cancel()
+        end
         self.delay      = nil
         self.acceptText = nil
-        self:CancelAllTimers()
+        self.delayTimer = nil
         self.AcceptButton:Enable()
     end
     self:Show()
@@ -181,18 +182,20 @@ function BlockDialog:OnCancelClick()
 end
 
 function BlockDialog:OnHide()
+    if self.delayTimer then
+        self.delayTimer:Cancel()
+    end
     self:Hide()
-    self:CancelAllTimers()
     self[self.closeType or 'OnCancel'](self.ctx, self.EditBox:GetText())
 end
 
 function BlockDialog:OnTimer()
     if self.delay <= 0 then
-        self:CancelAllTimers()
+        self.delayTimer = nil
         self.AcceptButton:SetText(self.acceptText)
         self.AcceptButton:Enable()
     else
-        self.AcceptButton:SetText(format('%s (%d)', self.acceptText, ceil(self.delay)))
+        self.AcceptButton:SetText(format('%s (%d)', self.acceptText, self.delay))
         self.AcceptButton:Disable()
         self.delay = self.delay - 1
     end
