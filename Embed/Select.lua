@@ -1,6 +1,5 @@
 --[[
 Select.lua
-@Date    : 2016/9/15 下午2:34:32
 @Author  : DengSir (tdaddon@163.com)
 @Link    : https://dengsir.github.io
 ]]

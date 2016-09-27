@@ -1,6 +1,5 @@
 --[[
 InputBox.lua
-@Date    : 2016/9/20 下午12:28:52
 @Author  : DengSir (tdaddon@163.com)
 @Link    : https://dengsir.github.io
 ]]

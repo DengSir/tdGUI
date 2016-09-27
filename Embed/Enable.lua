@@ -1,6 +1,5 @@
 --[[
 Enable.lua
-@Date    : 2016/9/15 下午3:24:36
 @Author  : DengSir (tdaddon@163.com)
 @Link    : https://dengsir.github.io
 ]]

@@ -1,6 +1,5 @@
 --[[
 ListView2.lua
-@Date    : 2016/9/16 上午9:25:40
 @Author  : DengSir (tdaddon@163.com)
 @Link    : https://dengsir.github.io
 ]]

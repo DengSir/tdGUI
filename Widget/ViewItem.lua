@@ -1,6 +1,5 @@
 --[[
 ViewItem.lua
-@Date    : 2016/9/15 下午3:41:55
 @Author  : DengSir (tdaddon@163.com)
 @Link    : https://dengsir.github.io
 ]]
@@ -36,7 +35,7 @@ function ViewItem:OnClick(click)
     if click == 'LeftButton' then
         if not IsModifierKeyDown() then
             if self:GetID() == 0 then
-                
+
             elseif not self._nonSelectable then
                 self:GetOwner():SetSelected(self:GetID())
             end

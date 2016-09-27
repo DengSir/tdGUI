@@ -1,6 +1,5 @@
 --[[
 GridView.lua
-@Date    : 2016/9/16 上午9:14:09
 @Author  : DengSir (tdaddon@163.com)
 @Link    : https://dengsir.github.io
 ]]

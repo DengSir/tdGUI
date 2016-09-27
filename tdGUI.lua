@@ -1,6 +1,5 @@
 --[[
 Addon.lua
-@Date    : 2016/9/15 上午10:58:29
 @Author  : DengSir (tdaddon@163.com)
 @Link    : https://dengsir.github.io
 ]]

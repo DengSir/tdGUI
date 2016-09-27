@@ -1,6 +1,5 @@
 --[[
 BlockDialog.lua
-@Date    : 2016/9/21 上午11:10:56
 @Author  : DengSir (tdaddon@163.com)
 @Link    : https://dengsir.github.io
 ]]

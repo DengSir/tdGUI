@@ -1,6 +1,5 @@
 --[[
 Refresh.lua
-@Date    : 2016/9/15 下午3:01:25
 @Author  : DengSir (tdaddon@163.com)
 @Link    : https://dengsir.github.io
 ]]

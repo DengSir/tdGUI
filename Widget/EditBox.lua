@@ -1,6 +1,5 @@
 --[[
 EditBox.lua
-@Date    : 2016/9/18 下午12:20:22
 @Author  : DengSir (tdaddon@163.com)
 @Link    : https://dengsir.github.io
 ]]

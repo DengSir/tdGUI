@@ -1,6 +1,5 @@
 --[[
 BasicPanel.lua
-@Date    : 2016/9/21 下午5:45:13
 @Author  : DengSir (tdaddon@163.com)
 @Link    : https://dengsir.github.io
 ]]
