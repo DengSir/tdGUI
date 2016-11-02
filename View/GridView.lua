@@ -134,7 +134,7 @@ function GridView:UpdateItems()
             button:Show()
             button:FireFormat()
 
-            autoWidth = max(autoWidth, button:GetWidth() or 0)
+            autoWidth = max(autoWidth, button:GetAutoWidth() or 0)
             maxRight  = max(maxRight, button:GetRight())
         else
             button:Hide()

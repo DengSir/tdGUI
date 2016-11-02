@@ -3,6 +3,6 @@
     <Include file="Libs\Libs.xml" />
     <Script file="tdGUI.lua" />
     <Include file="Embed\Embed.xml" />
-    <Include file="Widget\Widget.xml" />
     <Include file="View\View.xml" />
+    <Include file="Widget\Widget.xml" />
 </Ui>

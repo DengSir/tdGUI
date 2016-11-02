@@ -6,4 +6,7 @@
   <Script file="EditBoxGroup.lua" />
   <Script file="BlockDialog.lua" />
   <Script file="BasicPanel.lua" />
+  <Script file="AutoHideController.lua" />
+  <Script file="DropMenuItem.lua" />
+  <Script file="DropMenu.lua" />
 </Ui>

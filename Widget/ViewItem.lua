@@ -103,3 +103,5 @@ function ViewItem:BindCallback(object, callback, handler)
         self:FireHandler(handler)
     end)
 end
+
+ViewItem.GetAutoWidth = ViewItem.GetWidth

@@ -4,7 +4,7 @@ Addon.lua
 @Link    : https://dengsir.github.io
 ]]
 
-local MAJOR, MINOR = 'tdGUI-1.0', 1
+local MAJOR, MINOR = 'tdGUI-1.0', 2
 local GUI, oldminor = LibStub:NewLibrary(MAJOR, MINOR)
 if not GUI then return end
 
@@ -65,7 +65,7 @@ function GUI:NewClass(major, minor, super, ...)
 
     self:Embed(lib.class, ...)
 
-    return lib.class
+    return lib.class, oldminor, lib
 end
 
 function GUI:GetClass(major)
