@@ -4,7 +4,7 @@ ListView2.lua
 @Link    : https://dengsir.github.io
 ]]
 
-local MAJOR, MINOR = 'ListView', 1
+local MAJOR, MINOR = 'ListView', 2
 local ListView = LibStub('tdGUI-1.0'):NewClass(MAJOR, MINOR, 'ScrollFrame.BasicHybridScrollFrameTemplate', 'Refresh', 'View', 'Select')
 if not ListView then return end
 
@@ -80,11 +80,14 @@ function ListView:UpdateItems()
         local index = offset + i
         local button = self:GetButton(i)
 
-        button:SetID(index)
-        button:SetHeight(itemHeight)
-        button:Show()
-
-        button:FireFormat()
+        if self:GetItem(index) then
+            button:SetID(index)
+            button:SetHeight(itemHeight)
+            button:Show()
+            button:FireFormat()
+        else
+            button:Hide()
+        end
     end
 
     for i = realCount + 1, #self._buttons do
@@ -111,11 +114,12 @@ end
 
 function ListView:GetMaxCount()
     if not self._maxCount then
-        local itemHeight = self:GetItemHeight()
-        local itemSpacing = self:GetItemSpacing()
-        local height = self:GetHeight()
+        local itemHeight        = self:GetItemHeight()
+        local itemSpacing       = self:GetItemSpacing()
+        local height            = self:GetHeight()
+        local _, _, top, bottom = self:GetPadding()
 
-        self._maxCount = math.ceil(height / (itemHeight + itemSpacing)) + 1
+        self._maxCount = math.ceil((height - top - bottom) / (itemHeight + itemSpacing)) + 1
     end
     return self._maxCount
 end

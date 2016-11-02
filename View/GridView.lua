@@ -4,7 +4,7 @@ GridView.lua
 @Link    : https://dengsir.github.io
 ]]
 
-local MAJOR, MINOR = 'GridView', 1
+local MAJOR, MINOR = 'GridView', 2
 local GUI = LibStub('tdGUI-1.0')
 local GridView = GUI:NewClass(MAJOR, MINOR, 'Frame', 'Refresh', 'View', 'Select', 'Owner')
 if not GridView then return end
