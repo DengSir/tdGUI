@@ -64,17 +64,28 @@ function AutoHideController:OnUpdate(elapsed)
     self.updater = 0.5
 
     if self:IsOwnerOver() or self:IsMenuOver() then
-        self:CancelAllTimers()
-        self.timer = nil
-    elseif not self.timer then
-        self.timer = self:ScheduleTimer('OnTimer', self:GetAutoHideDelay())
+        self:CancelTimer()
+    else
+        self:StartTimer()
     end
 end
 
 function AutoHideController:OnTimer()
     self:GetParent():Hide()
-    self:CancelAllTimers()
-    self.timer = nil
+    self:CancelTimer()
+end
+
+function AutoHideController:CancelTimer()
+    if self.timer then
+        self.timer:Cancel()
+        self.timer = nil
+    end
+end
+
+function AutoHideController:StartTimer()
+    if not self.timer then
+        self.timer = C_Timer.NewTimer(self:GetAutoHideDelay(), function() self:OnTimer() end)
+    end
 end
 
 function AutoHideController:OnShow()

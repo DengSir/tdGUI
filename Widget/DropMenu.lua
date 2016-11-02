@@ -248,8 +248,6 @@ function DropMenu:OnItemFormatting(button, data)
         end
     end
     button:SetWidth(button:GetAutoWidth())
-
-    print(button:GetWidth(), button:GetAutoWidth(), button:GetPoint(), button:GetPoint(2))
 end
 
 function DropMenu:OnItemEnter(button, data)
