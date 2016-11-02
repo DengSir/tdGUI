@@ -199,15 +199,15 @@ function DropMenu:OnItemClick(button, data)
 
     local owner = self:GetOwner()
     if type(data.func) == 'function' then
-        if data.confirm then
+        -- if data.confirm then
             -- if data.confirmInput then
             --     GUI:CallInputDialog(data.confirm, data.func, data.confirmKey, data.confirmDefault, data.confirmMaxBytes, data.confirmInput, owner, data)
             -- else
             --     GUI:CallMessageDialog(data.confirm, data.func, data.confirmKey, owner, data)
             -- end
-        else
+        -- else
             data.func(owner, data, self, button:GetChecked())
-        end
+        -- end
     end
     if owner then
         if type(owner.SetItem) == 'function' then
