@@ -4,7 +4,7 @@ GridView.lua
 @Link    : https://dengsir.github.io
 ]]
 
-local MAJOR, MINOR = 'GridView', 2
+local MAJOR, MINOR = 'GridView', 3
 local GUI = LibStub('tdGUI-1.0')
 local GridView = GUI:NewClass(MAJOR, MINOR, 'Frame', 'Refresh', 'View', 'Select', 'Owner')
 if not GridView then return end
@@ -102,7 +102,7 @@ function GridView:UpdateItemPosition(i)
 
     button:ClearAllPoints()
 
-    if lineCount == 1 and self:GetRowCount() ~= 1 then
+    if lineCount == 1 then
         button:SetHeight(itemHeight)
         button:SetPoint('TOPLEFT', left, -top-(i-1)*(itemHeight+itemSpacingV))
         button:SetPoint('TOPRIGHT', -right, -top-(i-1)*(itemHeight+itemSpacingV))

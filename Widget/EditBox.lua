@@ -4,7 +4,7 @@ EditBox.lua
 @Link    : https://dengsir.github.io
 ]]
 
-local MAJOR, MINOR = 'EditBox', 1
+local MAJOR, MINOR = 'EditBox', 2
 local EditBox = LibStub('tdGUI-1.0'):NewClass(MAJOR, MINOR, 'Frame')
 if not EditBox then return end
 
@@ -78,7 +78,10 @@ function EditBox:Constructor(parent, bg)
         EditBox:SetAutoFocus(false)
         EditBox:SetMultiLine(true)
         EditBox:SetFontObject('ChatFontNormal')
-        EditBox:SetScript('OnCursorChanged', ScrollingEdit_OnCursorChanged)
+        EditBox:SetScript('OnCursorChanged', function(EditBox, ...)
+            ScrollingEdit_OnCursorChanged(EditBox, ...)
+            self:Fire('OnCursorChanged', ...)
+        end)
         EditBox:SetScript('OnTextChanged', function(EditBox, ...)
             ScrollingEdit_OnTextChanged(EditBox, EditBox:GetParent())
             self:Fire('OnTextChanged', ...)
