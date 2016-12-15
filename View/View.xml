@@ -2,5 +2,5 @@
 ..\FrameXML\UI.xsd">
   <Script file="ListView.lua" />
   <Script file="GridView.lua" />
-  <Script file="TreeView.lua" />
+  <Script file="AutoSizeGridView.lua" />
 </Ui>
