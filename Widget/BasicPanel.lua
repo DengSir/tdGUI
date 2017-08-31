@@ -97,12 +97,12 @@ function BasicPanel:GetText()
 end
 
 function BasicPanel:OnShow()
-    PlaySound('igCharacterInfoTab')
+    PlaySound(SOUNDKIT and SOUNDKIT.IG_CHARACTER_INFO_TAB or 'igCharacterInfoTab')
     self:Fire('OnShow')
 end
 
 function BasicPanel:OnHide()
-    PlaySound('igMainMenuClose')
+    PlaySound(SOUNDKIT and SOUNDKIT.IG_CHARACTER_INFO_CLOSE or 'igMainMenuClose')
     self:Fire('OnHide')
 end
 

@@ -30,7 +30,7 @@ function ViewItem:FireHandler(name, ...)
 end
 
 function ViewItem:OnClick(click)
-    PlaySound('igMainMenuOptionCheckBoxOn')
+    PlaySound(SOUNDKIT and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON or 'igMainMenuOptionCheckBoxOn')
 
     if click == 'LeftButton' then
         if not IsModifierKeyDown() then
@@ -47,7 +47,7 @@ function ViewItem:OnClick(click)
 end
 
 function ViewItem:OnDoubleClick(click)
-    PlaySound('igMainMenuOptionCheckBoxOn')
+    PlaySound(SOUNDKIT and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON or 'igMainMenuOptionCheckBoxOn')
 
     if click == 'LeftButton' then
         self:FireHandler('OnItemDoubleClick')
