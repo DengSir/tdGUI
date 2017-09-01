@@ -4,7 +4,7 @@ ViewItem.lua
 @Link    : https://dengsir.github.io
 ]]
 
-local MAJOR, MINOR = 'ViewItem', 2
+local MAJOR, MINOR = 'ViewItem', 3
 local ViewItem, oldminor = LibStub('tdGUI-1.0'):NewClass(MAJOR, MINOR, 'Button', 'Owner')
 if not ViewItem then return end
 

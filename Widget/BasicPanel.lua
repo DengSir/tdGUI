@@ -4,7 +4,7 @@ BasicPanel.lua
 @Link    : https://dengsir.github.io
 ]]
 
-local MAJOR, MINOR = 'BasicPanel', 1
+local MAJOR, MINOR = 'BasicPanel', 2
 local GUI = LibStub('tdGUI-1.0')
 local BasicPanel, oldminor = GUI:NewClass(MAJOR, MINOR, 'Frame.BasicFrameTemplate')
 if not BasicPanel then return end
