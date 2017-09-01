@@ -1,6 +1,6 @@
-## Interface: 70000
+## Interface: 70300
 ## Title: tdGUI
 ## Author: DengSir
-## Version: 70000.01
+## Version: 70300.01
 
 Load.xml
