@@ -9,4 +9,5 @@
   <Script file="AutoHideController.lua" />
   <Script file="DropMenuItem.lua" />
   <Script file="DropMenu.lua" />
+  <Script file="Dropdown.lua" />
 </Ui>
