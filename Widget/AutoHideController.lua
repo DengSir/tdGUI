@@ -4,7 +4,7 @@ AutoHideController.lua
 @Link    : https://dengsir.github.io
 ]]
 
-local MAJOR, MINOR = 'AutoHideController', 1
+local MAJOR, MINOR = 'AutoHideController', 2
 local GUI = LibStub('tdGUI-1.0')
 local AutoHideController, oldminor, ns = GUI:NewClass(MAJOR, MINOR, 'Frame')
 if not AutoHideController then return end
@@ -53,7 +53,7 @@ function AutoHideController:IsMenuOver()
 end
 
 function AutoHideController:OnUpdate(elapsed)
-    if not self:IsOwnerVisible() or self:Fire('OnUpdateCheck') then
+    if self:Fire('OnUpdateCheck') then
         return self:OnTimer()
     end
 
