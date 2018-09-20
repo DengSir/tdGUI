@@ -5,7 +5,7 @@ DropMenu.lua
 ]]
 
 
-local MAJOR, MINOR = 'DropMenu', 1
+local MAJOR, MINOR = 'DropMenu', 2
 local GUI = LibStub('tdGUI-1.0')
 local DropMenu, oldminor, ns = GUI:NewClass(MAJOR, MINOR, GUI:GetClass('GridView'))
 if not DropMenu then return end
@@ -46,6 +46,9 @@ function DropMenu:Constructor(_, style, withOtherMenu, menuList, level)
             insets = { left = 11, right = 12, top = 12, bottom = 9 },
             tileSize = 32, edgeSize = 32, tile = true,
         }
+        self.scrollBar:ClearAllPoints()
+        self.scrollBar:SetPoint('TOPRIGHT', -10, -26)
+        self.scrollBar:SetPoint('BOTTOMRIGHT', -10, 26)
     end
 
     self:Hide()
