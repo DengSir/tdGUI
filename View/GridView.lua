@@ -4,7 +4,7 @@ GridView.lua
 @Link    : https://dengsir.github.io
 ]]
 
-local MAJOR, MINOR = 'GridView', 3
+local MAJOR, MINOR = 'GridView', 4
 local GUI = LibStub('tdGUI-1.0')
 local GridView = GUI:NewClass(MAJOR, MINOR, 'Frame', 'Refresh', 'View', 'Select', 'Owner')
 if not GridView then return end
@@ -69,6 +69,7 @@ end
 function GridView:Update()
     self:UpdateScrollBar()
     self:UpdateItems()
+    self:UpdateLayout()
 end
 
 function GridView:GetMaxCount()
