@@ -4,7 +4,7 @@ EditBox.lua
 @Link    : https://dengsir.github.io
 ]]
 
-local MAJOR, MINOR = 'EditBox', 2
+local MAJOR, MINOR = 'EditBox', 3
 local EditBox = LibStub('tdGUI-1.0'):NewClass(MAJOR, MINOR, 'Frame')
 if not EditBox then return end
 
@@ -83,8 +83,12 @@ function EditBox:Constructor(parent, bg)
             self:Fire('OnCursorChanged', ...)
         end)
         EditBox:SetScript('OnTextChanged', function(EditBox, ...)
-            ScrollingEdit_OnTextChanged(EditBox, EditBox:GetParent())
-            self:Fire('OnTextChanged', ...)
+            local text = EditBox:GetText()
+            if text ~= self.prevText then
+                ScrollingEdit_OnTextChanged(EditBox, EditBox:GetParent())
+                self:Fire('OnTextChanged', ...)
+            end
+            self.prevText = text
         end)
         EditBox:SetScript('OnUpdate', ScrollingEdit_OnUpdate)
         EditBox:SetScript('OnEscapePressed', EditBox.ClearFocus)
@@ -116,6 +120,14 @@ function EditBox:Constructor(parent, bg)
     self.ScrollFrame  = ScrollFrame
     self.EditBox      = EditBox
     self.FocusGrabber = FocusGrabber
+end
+
+function EditBox:SetText(text)
+    self.EditBox:SetText(text)
+
+    if not self.EditBox:HasFocus() then
+        self.EditBox:SetCursorPosition(0)
+    end
 end
 
 local externs = {
@@ -164,7 +176,7 @@ local externs = {
     'SetNumber',
     'SetNumeric',
     'SetPassword',
-    'SetText',
+    -- 'SetText',
     'SetTextInsets',
     'ToggleInputLanguage',
 
