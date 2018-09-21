@@ -97,7 +97,8 @@ end
 
 function DropMenu:Open(level, menuTable, owner, ...)
     if type(menuTable) == 'function' then
-        menuTable = menuTable()
+        local list = {}
+        menuTable = menuTable(list) or list
     end
 
     if type(menuTable) ~= 'table' then

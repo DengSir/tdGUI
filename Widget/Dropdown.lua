@@ -8,11 +8,6 @@ local GUI = LibStub('tdGUI-1.0')
 local Dropdown, oldminor = GUI:NewClass(MAJOR, MINOR, 'Button')
 if not Dropdown then return end
 
-local function ButtonOnClick(self)
-    PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
-    self:GetParent():ToggleMenu()
-end
-
 function Dropdown:Constructor()
     local tl = self:CreateTexture(nil, 'BACKGROUND') do
         tl:SetTexture([[Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame]])
@@ -42,7 +37,9 @@ function Dropdown:Constructor()
         MenuButton:SetPushedTexture([[Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down]])
         MenuButton:SetDisabledTexture([[Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled]])
         MenuButton:SetHighlightTexture([[Interface\Buttons\UI-Common-MouseHilight]], 'ADD')
-        MenuButton:SetScript('OnClick', ButtonOnClick)
+        MenuButton:SetScript('OnClick', function()
+            self:Click()
+        end)
     end
 
     local Text = self:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmallLeft') do
@@ -55,7 +52,6 @@ function Dropdown:Constructor()
     self:SetDisabledFontObject('GameFontDisableSmallLeft')
     self:SetNormalFontObject('GameFontHighlightSmallLeft')
 
-    self.Text = Text
     self.MenuButton = MenuButton
 
     self:SetScript('OnEnable', self.OnEnable)
@@ -71,12 +67,9 @@ function Dropdown:OnDisable()
     self.MenuButton:Disable()
 end
 
-function Dropdown:SetText(text)
-    self.Text:SetText(text)
-end
-
-function Dropdown:GetText()
-    return self.Text:GetText()
+function Dropdown:OnClick()
+    PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
+    self:ToggleMenu()
 end
 
 local function _GetItem(menuTable, value)
@@ -123,7 +116,8 @@ end
 function Dropdown:ToggleMenu()
     local menuTable = self:GetMenuTable()
     if type(menuTable) == 'function' then
-        menuTable = menuTable()
+        local list = {}
+        menuTable = menuTable(list) or list
     end
     if not menuTable or #menuTable == 0 then
         return

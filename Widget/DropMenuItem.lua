@@ -98,3 +98,8 @@ end
 function DropMenuItem:SetFontObject(fontObject)
     self:SetNormalFontObject(fontObject or 'GameFontHighlightSmallLeft')
 end
+
+function DropMenuItem:SetText(text)
+    self.Text:SetText(text or '')
+    self.Text:GetWidth()  -- text有点问题，GetWidth就好了
+end
