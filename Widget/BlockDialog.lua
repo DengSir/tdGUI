@@ -4,7 +4,7 @@ BlockDialog.lua
 @Link    : https://dengsir.github.io
 ]]
 
-local MAJOR, MINOR = 'BlockDialog', 1
+local MAJOR, MINOR = 'BlockDialog', 2
 local GUI = LibStub('tdGUI-1.0')
 local BlockDialog, oldminor = GUI:NewClass(MAJOR, MINOR, 'Frame')
 if not BlockDialog then return end
@@ -188,6 +188,9 @@ function BlockDialog:OnCancelClick()
 end
 
 function BlockDialog:OnEditFocusLost()
+    if not self.editFocusLost then
+        return
+    end
     if self.editFocusLost == 'ACCEPT' then
         self:OnAcceptClick()
     else
