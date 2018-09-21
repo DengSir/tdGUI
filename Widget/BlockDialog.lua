@@ -104,6 +104,9 @@ function BlockDialog:Constructor(parent)
     local EditBox = GUI:GetClass('EditBox'):New(self, true) do
         EditBox:Hide()
         EditBox:SetPoint('BOTTOMRIGHT', -10, 40)
+        EditBox:SetCallback('OnEditFocusLost', function()
+            self:OnEditFocusLost()
+        end)
     end
 
     self.Text         = Text
@@ -122,7 +125,8 @@ function BlockDialog:Open(opts)
     self.OnCancel  = opts.OnCancel or nop
 
     self.closeType = nil
-    self.ctx       = opts.ctx
+    self.ctx = opts.ctx
+    self.editFocusLost = nil
 
     if opts.editBox then
         self.EditBox:Show()
@@ -154,6 +158,9 @@ function BlockDialog:Open(opts)
         if opts.editHighlightAll then
             self.EditBox:HighlightText()
         end
+        if opts.editFocusLost then
+            self.editFocusLost = opts.editFocusLost
+        end
     end
 end
 
@@ -178,6 +185,14 @@ end
 
 function BlockDialog:OnCancelClick()
     self:Hide()
+end
+
+function BlockDialog:OnEditFocusLost()
+    if self.editFocusLost == 'ACCEPT' then
+        self:OnAcceptClick()
+    else
+        self:OnCancelClick()
+    end
 end
 
 function BlockDialog:OnHide()
