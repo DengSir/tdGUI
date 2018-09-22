@@ -11,4 +11,5 @@
   <Script file="DropMenu.lua" />
   <Script file="Dropdown.lua" />
   <Script file="AnimPageFrame.lua" />
+  <Script file="NotifyFrame.lua" />
 </Ui>
