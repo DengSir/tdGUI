@@ -10,6 +10,8 @@ if not NotifyFrame then return end
 
 NotifyFrame.opts = {}
 
+local DEFAULT_ICON = [[Interface\Icons\INV_Misc_QuestionMark]]
+
 function NotifyFrame:Constructor()
     self:Hide()
     self:SetSize(350, 50)
@@ -32,7 +34,7 @@ function NotifyFrame:Constructor()
         Close:SetPoint('TOPRIGHT', 2, 2)
         Close:SetSize(25, 25)
         Close:SetScript('OnClick', function()
-            self:FadeOut()
+            self:OnClick('RightButton')
         end)
     end
 
@@ -40,7 +42,6 @@ function NotifyFrame:Constructor()
         Icon:SetPoint('LEFT', 4, 0)
         Icon:SetSize(42, 42)
         Icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
-        Icon:SetTexture([[Interface\Icons\INV_Misc_PenguinPet]])
     end
 
     local Text = self:CreateFontString(nil, 'ARTWORK', 'GameFontHighlightLeft') do
@@ -54,7 +55,6 @@ function NotifyFrame:Constructor()
         HelpText:SetPoint('LEFT', Icon, 'RIGHT', 5, 0)
         HelpText:SetFont(HelpText:GetFont(), 9)
         HelpText:SetTextColor(0.8, 0.8, 0.3)
-        HelpText:SetText('Click to close')
     end
 
     local Anim = self:CreateAnimationGroup() do
@@ -73,6 +73,7 @@ function NotifyFrame:Constructor()
     self.Anim     = Anim
     self.Alpha    = Alpha
     self.Text     = Text
+    self.Icon     = Icon
     self.HelpText = HelpText
 end
 
@@ -101,11 +102,14 @@ function NotifyFrame:OnClick(click)
         return
     end
     if click == 'LeftButton' then
-        if self.opts.callback then
-            self.opts.callback()
+        if self.opts.OnAccept then
+            self.opts.OnAccept()
             self:FadeOut()
         end
     else
+        if self.opts.OnCancel then
+            self.opts.OnCancel()
+        end
         self:FadeOut()
     end
 end
@@ -123,18 +127,25 @@ ns.used = ns.used or {}
 ns.unused = ns.unused or {}
 ns.queue = ns.queue or {}
 
-local function UpdatePosition()
+local NotifyManager = {}
+
+function NotifyManager:Pop()
+    while self:Update() do
+    end
+    self:UpdatePosition()
+end
+
+function NotifyManager:UpdatePosition()
     for i, frame in ipairs(ns.used) do
         if i == 1 then
             frame:SetPoint('BOTTOMRIGHT', -25, 77)
         else
             frame:SetPoint('BOTTOMRIGHT', ns.used[i-1], 'TOPRIGHT', 0, 2)
         end
-        print(frame:GetHeight())
     end
 end
 
-local function Update()
+function NotifyManager:Update()
     if #ns.used >= MAX_NOTIFIES then
         return
     end
@@ -144,40 +155,58 @@ local function Update()
         return
     end
 
+    if opts.type then
+        local t = opts.storage[opts.id]
+        if t then
+            if opts.type == 'ONCE' then
+                return true
+            end
+            if opts.type == 'DAY' and t == date('%Y/%m/%d') then
+                return true
+            end
+        end
+    end
+
     local notify = table.remove(ns.unused, 1) or NotifyFrame:New(UIParent)
     notify:SetPoint('BOTTOMRIGHT', -25, 77)
     table.insert(ns.used, notify)
     notify:SetCallback('OnHide', function(notify)
         tDeleteItem(ns.used, notify)
         table.insert(ns.unused, notify)
-        Update()
-        UpdatePosition()
+        self:Pop()
     end)
 
     notify:SetText(opts.text)
+    notify.Icon:SetTexture(opts.icon or DEFAULT_ICON)
+    notify.HelpText:SetText(opts.help or 'Right click to close')
     notify.opts = opts
     notify:FadeIn()
-end
 
-local function ParseOpts(...)
-    local opts
-    if type(...) == 'string' then
-        local text, callback, icon = ...
-        opts = {
-            text     = text,
-            callback = callback,
-            icon     = icon,
-        }
-    elseif type(...) == 'table' then
-        opts = ...
-    else
-        error('Usage: Notify(opts)', 2)
+    if opts.type then
+        opts.storage[opts.id] = date('%Y/%m/%d')
     end
-    return opts
 end
 
-function GUI:Notify(...)
-    table.insert(ns.queue, ParseOpts(...))
-    Update()
-    UpdatePosition()
+function GUI:Notify(opts)
+    assert(type(opts) == 'table')
+    assert(opts.text)
+    assert(not opts.type or opts.type == 'ONCE' or opts.type == 'DAY')
+
+    if opts.type then
+        assert(type(opts.storage) == 'table')
+        assert(opts.id)
+    end
+
+    table.insert(ns.queue, opts)
+    NotifyManager:Pop()
+end
+
+function GUI:NotifyOnce(opts)
+    opts.type = 'ONCE'
+    return self:Notify(opts)
+end
+
+function GUI:NotifyDay(opts)
+    opts.type = 'DAY'
+    return self:Notify(opts)
 end
