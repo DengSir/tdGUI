@@ -11,31 +11,52 @@ if not NotifyFrame then return end
 NotifyFrame.opts = {}
 
 local DEFAULT_ICON = [[Interface\Icons\INV_Misc_QuestionMark]]
+local BACKGROP = {
+    bgFile = [[Interface\BUTTONS\WHITE8X8]],
+    edgeFile = [[Interface\BUTTONS\WHITE8X8]],
+    tile = true,
+    tileSize = 1,
+    edgeSize = 1,
+    insets = {left = 1, right = 1, top = 1, bottom = 1}
+}
 
 function NotifyFrame:Constructor()
     self:Hide()
     self:SetSize(350, 50)
-    self:SetBackdrop{
-        bgFile = [[Interface\DialogFrame\UI-DialogBox-Background-Dark]],
-        edgeFile = nil,
-        tile = true,
-        tileSize = 16,
-        edgeSize = 16,
-        insets = {left = 1, right = 1, top = 1, bottom = 1}
-    }
-    self:SetBackdropColor(0, 0, 0, 1)
     self:SetFrameStrata('DIALOG')
     self:RegisterForClicks('LeftButtonUp', 'RightButtonUp')
+    self:SetBackdrop(BACKGROP)
+    self:SetBackdropBorderColor(0, 0, 0, 1)
+    self:SetBackdropColor(0, 0, 0, 0.6)
 
     self:SetScript('OnClick', self.OnClick)
     self:SetScript('OnHide', self.OnHide)
 
-    local Close = CreateFrame('Button', nil, self, 'UIPanelCloseButton') do
-        Close:SetPoint('TOPRIGHT', 2, 2)
-        Close:SetSize(25, 25)
+    local Close = CreateFrame('Button', nil, self) do
+        Close:SetBackdrop(BACKGROP)
+        Close:SetBackdropBorderColor(0, 0, 0, 1)
+        Close:SetBackdropColor(0, 0, 0, 0.4)
+        Close:SetPoint('TOPRIGHT', 0, 0)
+        Close:SetSize(16, 16)
         Close:SetScript('OnClick', function()
             self:OnClick('RightButton')
         end)
+
+        local padding = 4
+
+        local Line1 = Close:CreateLine(nil, 'ARTWORK') do
+            Line1:SetThickness(1)
+            Line1:SetStartPoint('TOPLEFT', padding, -padding)
+            Line1:SetEndPoint('BOTTOMRIGHT', -padding, padding)
+            Line1:SetColorTexture(0.5, 0.5, 0.5)
+        end
+
+        local Line2 = Close:CreateLine(nil, 'ARTWORK') do
+            Line2:SetThickness(1)
+            Line2:SetStartPoint('TOPRIGHT', -padding, -padding)
+            Line2:SetEndPoint('BOTTOMLEFT', padding, padding)
+            Line2:SetColorTexture(0.5, 0.5, 0.5)
+        end
     end
 
     local Icon = self:CreateTexture(nil, 'ARTWORK') do
@@ -53,7 +74,7 @@ function NotifyFrame:Constructor()
         HelpText:SetWordWrap(false)
         HelpText:SetPoint('BOTTOM', 0, 4)
         HelpText:SetPoint('LEFT', Icon, 'RIGHT', 5, 0)
-        HelpText:SetFont(HelpText:GetFont(), 9)
+        HelpText:SetFont(HelpText:GetFont(), 11)
         HelpText:SetTextColor(0.8, 0.8, 0.3)
     end
 
@@ -70,16 +91,36 @@ function NotifyFrame:Constructor()
         Alpha:SetDuration(0.5)
     end
 
-    self.Anim     = Anim
-    self.Alpha    = Alpha
-    self.Text     = Text
-    self.Icon     = Icon
-    self.HelpText = HelpText
+    local IgnoreButton = CreateFrame('Button', nil, self) do
+        IgnoreButton:SetBackdrop(BACKGROP)
+        IgnoreButton:SetBackdropBorderColor(0, 0, 0, 1)
+        IgnoreButton:SetBackdropColor(0, 0, 0, 0.4)
+        IgnoreButton:SetSize(80, 16)
+        IgnoreButton:SetPoint('BOTTOMRIGHT')
+        IgnoreButton:SetScript('OnClick', function()
+            self:OnIgnoreClick()
+        end)
+
+        local Text = IgnoreButton:CreateFontString(nil, 'OVERLAY', 'GameFontNormalGraySmall') do
+            Text:SetFont(Text:GetFont(), 11)
+            Text:SetPoint('CENTER')
+            IgnoreButton:SetFontString(Text)
+            IgnoreButton:SetHighlightFontObject('GameFontHighlightSmall')
+            IgnoreButton:SetNormalFontObject('GameFontNormalGraySmall')
+        end
+    end
+
+    self.Anim         = Anim
+    self.Alpha        = Alpha
+    self.Text         = Text
+    self.Icon         = Icon
+    self.HelpText     = HelpText
+    self.IgnoreButton = IgnoreButton
 end
 
 function NotifyFrame:SetText(text)
     self.Text:SetText(text)
-    self:SetHeight(max(50, self.Text:GetStringHeight() + self.HelpText:GetStringHeight() + 10))
+    self:SetHeight(max(50, self.Text:GetStringHeight() + self.HelpText:GetStringHeight() + 12))
 end
 
 function NotifyFrame:FadeIn()
@@ -101,22 +142,42 @@ function NotifyFrame:OnClick(click)
     if self.Anim:IsPlaying() then
         return
     end
-    if click == 'LeftButton' then
-        if self.opts.OnAccept then
-            self.opts.OnAccept()
-            self:FadeOut()
-        end
-    else
-        if self.opts.OnCancel then
-            self.opts.OnCancel()
-        end
-        self:FadeOut()
+
+    self:CallOptions(click == 'LeftButton' and 'OnAccept' or 'OnCancel')
+    self:FadeOut()
+end
+
+function NotifyFrame:OnIgnoreClick()
+    if self.Anim:IsPlaying() then
+        return
     end
+    self:CallOptions('OnIgnore')
+    self:FadeOut()
 end
 
 function NotifyFrame:OnHide()
     self.opts = nil
     self:Fire('OnHide')
+end
+
+function NotifyFrame:SetOptions(opts)
+    self.opts = opts
+    self:SetText(opts.text)
+    self.Icon:SetTexture(opts.icon or DEFAULT_ICON)
+    self.IgnoreButton:SetText(opts.ignore or '')
+    self.IgnoreButton:SetShown(opts.ignore)
+    self.IgnoreButton:SetWidth(self.IgnoreButton:GetTextWidth() + 10)
+    self.HelpText:SetText(opts.help or 'Right click to close')
+end
+
+function NotifyFrame:GetOptions()
+    return self.opts
+end
+
+function NotifyFrame:CallOptions(method)
+    if type(self.opts[method]) == 'function' then
+        self.opts[method](self.opts)
+    end
 end
 
 -- public
@@ -128,6 +189,35 @@ ns.unused = ns.unused or {}
 ns.queue = ns.queue or {}
 
 local NotifyManager = {}
+local TYPES = {ONCE = true, DAY = true}
+
+function NotifyManager:CheckOptions(opts)
+    if opts.ignore and self:GetStorage(opts, 'ignore') then
+        return
+    end
+
+    if opts.type then
+        local last = self:GetStorage(opts, 'last')
+        if last then
+            if opts.type == 'ONCE' then
+                return
+            end
+            if opts.type == 'DAY' and last == date('%Y/%m/%d') then
+                return
+            end
+        end
+    end
+    return true
+end
+
+function NotifyManager:SaveStorage(opts, key, value)
+    opts.storage[opts.id] = opts.storage[opts.id] or {}
+    opts.storage[opts.id][key] = value
+end
+
+function NotifyManager:GetStorage(opts, key)
+    return opts.storage[opts.id] and opts.storage[opts.id][key]
+end
 
 function NotifyManager:Pop()
     while self:Update() do
@@ -138,7 +228,7 @@ end
 function NotifyManager:UpdatePosition()
     for i, frame in ipairs(ns.used) do
         if i == 1 then
-            frame:SetPoint('BOTTOMRIGHT', -25, 77)
+            frame:SetPoint('BOTTOMRIGHT', -25, 90)
         else
             frame:SetPoint('BOTTOMRIGHT', ns.used[i-1], 'TOPRIGHT', 0, 2)
         end
@@ -155,46 +245,50 @@ function NotifyManager:Update()
         return
     end
 
-    if opts.type then
-        local t = opts.storage[opts.id]
-        if t then
-            if opts.type == 'ONCE' then
-                return true
-            end
-            if opts.type == 'DAY' and t == date('%Y/%m/%d') then
-                return true
-            end
-        end
+    if not self:CheckOptions(opts) then
+        return true
     end
 
     local notify = table.remove(ns.unused, 1) or NotifyFrame:New(UIParent)
-    notify:SetPoint('BOTTOMRIGHT', -25, 77)
-    table.insert(ns.used, notify)
+    notify:SetPoint('BOTTOMRIGHT', -25, 90)
     notify:SetCallback('OnHide', function(notify)
         tDeleteItem(ns.used, notify)
         table.insert(ns.unused, notify)
         self:Pop()
     end)
-
-    notify:SetText(opts.text)
-    notify.Icon:SetTexture(opts.icon or DEFAULT_ICON)
-    notify.HelpText:SetText(opts.help or 'Right click to close')
-    notify.opts = opts
+    notify:SetOptions(opts)
     notify:FadeIn()
 
+    table.insert(ns.used, notify)
+
     if opts.type then
-        opts.storage[opts.id] = date('%Y/%m/%d')
+        self:SaveStorage(opts, 'last', date('%Y/%m/%d'))
     end
 end
 
 function GUI:Notify(opts)
-    assert(type(opts) == 'table')
-    assert(opts.text)
-    assert(not opts.type or opts.type == 'ONCE' or opts.type == 'DAY')
+    if type(opts) ~= 'table' then
+        error(format([[bad argument #1 to 'Notify' (table expected, got %s]], type(opts)), 2)
+    end
+    if type(opts.text) ~= 'string' then
+        error(format([[bad argument opts.text to 'Notify' (string expected, got %s)]], type(opts.text)), 2)
+    end
+    if opts.type or opts.ignore then
+        if opts.type and not TYPES[opts.type] then
+            error(format([[bad argument opts.type to 'Notify' (ONCE|DAY)]]), 2)
+        end
+        if type(opts.storage) ~= 'table' then
+            error(format([[bad argument opts.storage to 'Notify' (string expected, got %s)]], type(opts.storage)), 2)
+        end
+        if not opts.id then
+            error(format([[bad argument opts.storage to 'Notify']]), 2)
+        end
+    end
 
-    if opts.type then
-        assert(type(opts.storage) == 'table')
-        assert(opts.id)
+    if opts.ignore then
+        opts.OnIgnore = function(opts)
+            NotifyManager:SaveStorage(opts, 'ignore', true)
+        end
     end
 
     table.insert(ns.queue, opts)
