@@ -93,23 +93,20 @@ function EditBox:Constructor(parent, bg)
         EditBox:SetScript('OnUpdate', ScrollingEdit_OnUpdate)
         EditBox:SetScript('OnEscapePressed', EditBox.ClearFocus)
         EditBox:SetScript('OnEditFocusGained', function()
-            self.FocusGrabber:Hide()
             self:Fire('OnEditFocusGained')
         end)
         EditBox:SetScript('OnEditFocusLost', function()
-            self.FocusGrabber:Show()
             self:Fire('OnEditFocusLost')
         end)
     end
 
-    local FocusGrabber = CreateFrame('Button', nil, self) do
-        FocusGrabber:SetAllPoints(ScrollFrame)
-        FocusGrabber:SetFrameLevel(EditBox:GetFrameLevel() + 5)
-        FocusGrabber:SetScript('OnClick', function()
-            self.EditBox:SetCursorPosition(self.EditBox:GetText():len())
-            self.EditBox:SetFocus()
-        end)
-    end
+    self:SetScript('OnMouseDown', function()
+        if self.EditBox:HasFocus() then
+            return
+        end
+        self.EditBox:SetFocus()
+        self.EditBox:SetCursorPosition(#self.EditBox:GetText())
+    end)
 
     ScrollFrame:SetScript('OnSizeChanged', function(ScrollFrame)
         self.EditBox:SetWidth(ScrollFrame:GetWidth() - 30)
