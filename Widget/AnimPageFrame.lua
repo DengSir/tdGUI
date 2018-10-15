@@ -3,9 +3,10 @@
 -- @Link   : https://dengsir.github.io
 -- @Date   : 9/20/2018, 11:09:58 PM
 
-local MAJOR, MINOR = 'AnimPageFrame', 1
+local MAJOR, MINOR = 'AnimPageFrame', 2
 local GUI = LibStub('tdGUI-1.0')
 local AnimPageFrame, oldminor = GUI:NewClass(MAJOR, MINOR, 'ScrollFrame', 'Refresh')
+if not AnimPageFrame then return end
 
 function AnimPageFrame:Constructor()
     local Body = CreateFrame('Frame', nil, self) do

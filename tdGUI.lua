@@ -4,7 +4,7 @@ Addon.lua
 @Link    : https://dengsir.github.io
 ]]
 
-local MAJOR, MINOR = 'tdGUI-1.0', 3
+local MAJOR, MINOR = 'tdGUI-1.0', 4
 local GUI, oldminor = LibStub:NewLibrary(MAJOR, MINOR)
 if not GUI then return end
 
@@ -52,6 +52,9 @@ local Class = LibStub('LibClass-2.0')
 
 function GUI:NewClass(major, minor, super, ...)
     local lib, oldminor = LibStub:NewLibrary(format('%s.Class.%s', MAJOR, major), minor)
+    if not lib then
+        return
+    end
 
     if lib.class then
         local _super, _inherit = Class:SuperHelper(super)
