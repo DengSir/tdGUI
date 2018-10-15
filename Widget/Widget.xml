@@ -3,6 +3,7 @@
   <Script file="ViewItem.lua" />
   <Script file="EditBox.lua" />
   <Script file="InputBox.lua" />
+  <Script file="NumericBox.lua" />
   <Script file="EditBoxGroup.lua" />
   <Script file="BlockDialog.lua" />
   <Script file="BasicPanel.lua" />

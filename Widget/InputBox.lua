@@ -4,7 +4,7 @@ InputBox.lua
 @Link    : https://dengsir.github.io
 ]]
 
-local MAJOR, MINOR = 'InputBox', 1
+local MAJOR, MINOR = 'InputBox', 2
 local InputBox = LibStub('tdGUI-1.0'):NewClass(MAJOR, MINOR, 'EditBox')
 if not InputBox then return end
 
@@ -12,15 +12,17 @@ function InputBox:Constructor()
     local tLeft = self:CreateTexture(nil, 'BACKGROUND') do
         tLeft:SetTexture([[Interface\Common\Common-Input-Border]])
         tLeft:SetTexCoord(0, 0.0625, 0, 0.625)
-        tLeft:SetSize(8, 20)
-        tLeft:SetPoint('LEFT')
+        tLeft:SetWidth(8)
+        tLeft:SetPoint('TOPLEFT')
+        tLeft:SetPoint('BOTTOMLEFT')
     end
 
     local tRight = self:CreateTexture(nil, 'BACKGROUND') do
         tRight:SetTexture([[Interface\Common\Common-Input-Border]])
         tRight:SetTexCoord(0.9375, 1.0, 0, 0.625)
-        tRight:SetSize(8, 20)
-        tRight:SetPoint('RIGHT')
+        tRight:SetWidth(8)
+        tRight:SetPoint('TOPRIGHT')
+        tRight:SetPoint('BOTTOMRIGHT')
     end
 
     local tMid = self:CreateTexture(nil, 'BACKGROUND') do
