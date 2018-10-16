@@ -4,7 +4,7 @@ GridView.lua
 @Link    : https://dengsir.github.io
 ]]
 
-local MAJOR, MINOR = 'GridView', 4
+local MAJOR, MINOR = 'GridView', 5
 local GUI = LibStub('tdGUI-1.0')
 local GridView = GUI:NewClass(MAJOR, MINOR, 'Frame', 'Refresh', 'View', 'Select', 'Owner')
 if not GridView then return end
@@ -117,6 +117,10 @@ function GridView:UpdateItemPosition(i)
 end
 
 function GridView:UpdateItems()
+    if not self:GetRight() then
+        return
+    end
+
     local offset    = self:GetOffset()
     local maxCount  = min(self:GetColumnCount() * self:GetRowCount(), self:GetItemCount())
     local autoWidth = self:GetItemWidth() or 1
