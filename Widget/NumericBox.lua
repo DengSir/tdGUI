@@ -3,7 +3,7 @@
 -- @Link   : https://dengsir.github.io
 -- @Date   : 10/15/2018, 10:46:28 PM
 
-local MAJOR, MINOR = 'NumericBox', 1
+local MAJOR, MINOR = 'NumericBox', 2
 local GUI = LibStub('tdGUI-1.0')
 local NumericBox = GUI:NewClass(MAJOR, MINOR, GUI:GetClass('InputBox'))
 if not NumericBox then return end
@@ -19,12 +19,16 @@ function NumericBox:Constructor()
 end
 
 function NumericBox:SetNumber(num)
-    if num < self.minValue then
-        num = self.minValue
-    elseif num > self.maxValue then
-        num = self.maxValue
+    if num < self._minValue then
+        num = self._minValue
+    elseif num > self._maxValue then
+        num = self._maxValue
     end
     self:SuperCall('SetNumber', num)
+end
+
+function NumericBox:GetMinMaxValues()
+    return self._minValue, self._maxValue
 end
 
 function NumericBox:SetMinMaxValues(minValue, maxValue)
@@ -41,10 +45,10 @@ function NumericBox:SetMinMaxValues(minValue, maxValue)
         error('err max value', 2)
     end
 
-    self.minValue = floor(minValue)
-    self.maxValue = floor(maxValue)
+    self._minValue = floor(minValue)
+    self._maxValue = floor(maxValue)
 
-    self:SetMaxBytes(#(tostring(self.maxValue)) + 1)
+    self:SetMaxBytes(#(tostring(self._maxValue)) + 1)
     self:OnTextChanged()
     self:OnEnableChanged()
 
@@ -52,28 +56,42 @@ function NumericBox:SetMinMaxValues(minValue, maxValue)
 end
 
 function NumericBox:SetValueStep(step)
-    self.step = step
+    self._step = step
+end
+
+function NumericBox:GetValueStep()
+    return self._step
 end
 
 function NumericBox:OnTextChanged(userInput)
     if not userInput or #self:GetText() == self:GetMaxBytes() - 1 then
         local value = self:GetNumber()
-        if value < self.minValue then
-            return self:SetNumber(self.minValue)
-        elseif value > self.maxValue then
-            return self:SetNumber(self.maxValue)
+        if value < self._minValue then
+            return self:SetNumber(self._minValue)
+        elseif value > self._maxValue then
+            return self:SetNumber(self._maxValue)
         end
     end
-
     self:OnEnableChanged()
-    self:Fire('OnValueChanged', self:GetNumber())
+
+    local value = self:GetNumber()
+    if value ~= self._prev then
+        self._prev = value
+        self:Fire('OnValueChanged', value)
+    end
 end
 
 function NumericBox:OnMouseWheel(delta)
     if not self:IsEnabled() then
         return
     end
-    self:SetNumber(self:GetNumber() + delta * self.step)
+    if IsShiftKeyDown() then
+        self:SetNumber(self:GetNumber() + delta * self._step * 3)
+    elseif IsControlKeyDown() then
+        self:SetNumber(delta > 0 and self._maxValue or self._minValue)
+    else
+        self:SetNumber(self:GetNumber() + delta * self._step)
+    end
 end
 
 function NumericBox:OnEnableChanged()
@@ -83,8 +101,8 @@ function NumericBox:OnEnableChanged()
     local isEnabled = self:IsEnabled()
     local value = self:GetNumber()
 
-    self.PlusButton:SetEnabled(isEnabled and value < self.maxValue)
-    self.MinusButton:SetEnabled(isEnabled and value > self.minValue)
+    self.PlusButton:SetEnabled(isEnabled and value < self._maxValue)
+    self.MinusButton:SetEnabled(isEnabled and value > self._minValue)
 end
 
 local function ButtonOnClick(self)
@@ -124,29 +142,42 @@ local function LayoutTexture(button, texture, x, y, ...)
     texture:SetTexCoord(...)
 end
 
-function NumericBox:EnableControl()
-    local PlusButton = CreateFrame('Button', nil, self) do
-        PlusButton:SetWidth(12)
-        PlusButton:SetPoint('BOTTOMRIGHT', self, 'RIGHT', -3, 0)
-        PlusButton:SetPoint('TOPRIGHT', -3, 0)
-        PlusButton:SetScript('OnClick', ButtonOnClick)
-        PlusButton.delta = 1
-        LayoutTexture(PlusButton, [[Interface\BUTTONS\Arrow-Up-Down]], 0, -1, 0, 1, 0.5, 0.9)
+function NumericBox:SetButtonsEnabled(state)
+    if state then
+        if not self.PlusButton then
+            local PlusButton = CreateFrame('Button', nil, self) do
+                PlusButton:SetWidth(12)
+                PlusButton:SetPoint('BOTTOMRIGHT', self, 'RIGHT', -3, 0)
+                PlusButton:SetPoint('TOPRIGHT', -3, 0)
+                PlusButton:SetScript('OnClick', ButtonOnClick)
+                PlusButton.delta = 1
+                LayoutTexture(PlusButton, [[Interface\BUTTONS\Arrow-Up-Down]], 0, -1, 0, 1, 0.5, 0.9)
+            end
+
+            local MinusButton = CreateFrame('Button', nil, self) do
+                MinusButton:SetWidth(12)
+                MinusButton:SetPoint('TOPRIGHT', self, 'RIGHT', -3, 0)
+                MinusButton:SetPoint('BOTTOMRIGHT', -3, 0)
+                MinusButton:SetScript('OnClick', ButtonOnClick)
+                MinusButton.delta = -1
+                LayoutTexture(MinusButton, [[Interface\BUTTONS\Arrow-Down-Down]], 0, 1, 0, 1, 0.1, 0.5)
+            end
+
+            self.PlusButton = PlusButton
+            self.MinusButton = MinusButton
+        end
+        self.PlusButton:Show()
+        self.MinusButton:Show()
+        self:SetTextInsets(3, 15, 0, 0)
+    else
+        if self.PlusButton then
+            self.PlusButton:Hide()
+            self.MinusButton:Hide()
+        end
+        self:SetTextInsets(3, 3, 0, 0)
     end
+end
 
-    local MinusButton = CreateFrame('Button', nil, self) do
-        MinusButton:SetWidth(12)
-        MinusButton:SetPoint('TOPRIGHT', self, 'RIGHT', -3, 0)
-        MinusButton:SetPoint('BOTTOMRIGHT', -3, 0)
-        MinusButton:SetScript('OnClick', ButtonOnClick)
-        MinusButton.delta = -1
-        LayoutTexture(MinusButton, [[Interface\BUTTONS\Arrow-Down-Down]], 0, 1, 0, 1, 0.1, 0.5)
-    end
-
-    self.PlusButton = PlusButton
-    self.MinusButton = MinusButton
-
-    self:SetTextInsets(8, 28, 0, 0)
-
-    self:HookScript('OnSizeChanged', self.OnSizeChanged)
+function NumericBox:IsButtonsEnabled()
+    return self.PlusButton or self.PlusButton:IsShown()
 end
