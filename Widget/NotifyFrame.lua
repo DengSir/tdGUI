@@ -3,7 +3,7 @@
 -- @Link   : https://dengsir.github.io
 -- @Date   : 9/22/2018, 11:26:58 AM
 
-local MAJOR, MINOR = 'NotifyFrame', 1
+local MAJOR, MINOR = 'NotifyFrame', 2
 local GUI = LibStub('tdGUI-1.0')
 local NotifyFrame, oldminor, ns = GUI:NewClass(MAJOR, MINOR, 'Button')
 if not NotifyFrame then return end
@@ -162,12 +162,12 @@ end
 
 function NotifyFrame:SetOptions(opts)
     self.opts = opts
-    self:SetText(opts.text)
     self.Icon:SetTexture(opts.icon or DEFAULT_ICON)
     self.IgnoreButton:SetText(opts.ignore or '')
     self.IgnoreButton:SetShown(opts.ignore)
     self.IgnoreButton:SetWidth(self.IgnoreButton:GetTextWidth() + 10)
     self.HelpText:SetText(opts.help or 'Right click to close')
+    self:SetText(opts.text)
 end
 
 function NotifyFrame:GetOptions()
