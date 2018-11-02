@@ -4,7 +4,7 @@ Addon.lua
 @Link    : https://dengsir.github.io
 ]]
 
-local MAJOR, MINOR = 'tdGUI-1.0', 5
+local MAJOR, MINOR = 'tdGUI-1.0', 6
 local GUI, oldminor = LibStub:NewLibrary(MAJOR, MINOR)
 if not GUI then return end
 

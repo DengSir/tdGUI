@@ -4,10 +4,14 @@ BasicPanel.lua
 @Link    : https://dengsir.github.io
 ]]
 
-local MAJOR, MINOR = 'BasicPanel', 2
+local MAJOR, MINOR = 'BasicPanel', 3
 local GUI = LibStub('tdGUI-1.0')
 local BasicPanel, oldminor = GUI:NewClass(MAJOR, MINOR, 'Frame.BasicFrameTemplate')
 if not BasicPanel then return end
+
+if BasicPanel.lw11origSetScale then
+    BasicPanel.SetScale = BasicPanel.lw11origSetScale
+end
 
 LibStub('LibWindow-1.1'):Embed(BasicPanel)
 
@@ -50,6 +54,7 @@ function BasicPanel:Constructor()
         Resize:SetScript('OnMouseUp', function()
             self:StopMovingOrSizing()
             self:SaveSize()
+            self:SavePosition()
         end)
     end
 
