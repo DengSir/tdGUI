@@ -6,7 +6,7 @@ AutoSizeGridView.lua
 
 local MAJOR, MINOR = 'AutoSizeGridView', 3
 local GUI = LibStub('tdGUI-1.0')
-local AutoSizeGridView = GUI:NewClass(MAJOR, MINOR, 'Frame', 'Refresh', 'View', 'Select', 'Owner')
+local AutoSizeGridView = GUI:NewClass(MAJOR, MINOR, 'Frame.BackdropTemplate', 'Refresh', 'View', 'Select', 'Owner')
 if not AutoSizeGridView then return end
 
 function AutoSizeGridView:Constructor()
